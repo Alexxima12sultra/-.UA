@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Дошка.UA</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Geologica:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F0E8;--paper:#FDFAF4;--ink:#1A1208;--accent:#D4410B;--accent2:#2D6A2D;
+  --muted:#8A7F6E;--border:#C8BCA8;--shadow:rgba(26,18,8,.15);
+  --ch:#1A1208;--ch-panel:#221A10;--ch-border:#3A2E1E;--ch-me:#D4410B;--ch-them:#2E2416;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background-color:var(--bg);background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,var(--border) 39px,var(--border) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,var(--border) 39px,var(--border) 40px);min-height:100vh;font-family:'Geologica',sans-serif;}
+
+/* ── HEADER ── */
+header{background:var(--ink);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:4px solid var(--accent);}
+.logo{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:900;color:var(--paper);text-transform:uppercase;}
+.logo span{color:var(--accent);}
+.header-actions{display:flex;gap:8px;align-items:center;}
+.btn-primary{background:var(--accent);color:#fff;border:none;padding:9px 18px;font-family:'Unbounded',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;cursor:pointer;transition:all .2s;}
+.btn-primary:hover{background:#b33500;transform:translateY(-1px);}
+.btn-header{background:transparent;color:var(--paper);border:2px solid var(--ch-border);padding:9px 14px;font-family:'Unbounded',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.btn-header:hover{border-color:var(--accent);color:var(--accent);}
+.hbadge{background:var(--accent);color:#fff;font-size:9px;font-weight:900;min-width:16px;height:16px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;padding:0 4px;}
+
+/* ── SEARCH ── */
+.search-section{background:var(--ink);padding:0 40px 20px;display:flex;gap:10px;flex-wrap:wrap;}
+.search-wrap{flex:1;min-width:260px;position:relative;}
+.search-wrap input{width:100%;padding:11px 14px 11px 42px;border:2px solid var(--border);background:var(--paper);font-family:'Geologica',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:border .2s;}
+.search-wrap input:focus{border-color:var(--accent);}
+.search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:16px;}
+.filter-select{padding:11px 14px;border:2px solid var(--border);background:var(--paper);font-family:'Geologica',sans-serif;font-size:12px;color:var(--ink);outline:none;cursor:pointer;min-width:150px;}
+
+/* ── CATEGORIES ── */
+.categories{padding:16px 40px;display:flex;gap:7px;flex-wrap:wrap;}
+.cat-btn{padding:5px 14px;border:2px solid var(--ink);background:transparent;font-family:'Geologica',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;color:var(--ink);display:flex;align-items:center;gap:5px;}
+.cat-btn:hover,.cat-btn.active{background:var(--ink);color:var(--paper);}
+.cat-btn .count{background:var(--accent);color:#fff;font-size:9px;padding:1px 5px;font-weight:700;}
+.cat-btn.active .count{background:var(--paper);color:var(--ink);}
+
+/* ── BOARD ── */
+.board-header{padding:0 40px 12px;display:flex;align-items:baseline;justify-content:space-between;border-bottom:2px solid var(--ink);margin:0 40px 20px;}
+.board-title{font-family:'Unbounded',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);}
+.results-count{font-size:11px;color:var(--muted);}
+.board{padding:0 32px 60px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px;}
+
+/* ── CARD ── */
+.card{background:var(--paper);position:relative;box-shadow:4px 4px 0 var(--shadow),8px 8px 0 rgba(26,18,8,.06);transition:transform .2s,box-shadow .2s;animation:fadeIn .4s ease both;border:1px solid var(--border);}
+.card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--shadow),10px 10px 0 rgba(26,18,8,.06);}
+.card.featured{border-left:4px solid var(--accent);}
+
+/* Photo area */
+.card-photo{position:relative;width:100%;height:180px;background:#E8E0D0;overflow:hidden;cursor:pointer;}
+.card-photo img{width:100%;height:100%;object-fit:cover;transition:transform .3s;}
+.card:hover .card-photo img{transform:scale(1.04);}
+.card-photo-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--muted);font-size:28px;}
+.card-photo-placeholder span{font-size:11px;font-family:'Unbounded',sans-serif;text-transform:uppercase;letter-spacing:1px;}
+.photo-count{position:absolute;bottom:8px;right:8px;background:rgba(26,18,8,.7);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;font-family:'Unbounded',sans-serif;}
+
+/* Favorite button */
+.btn-fav{position:absolute;top:8px;right:8px;width:32px;height:32px;background:rgba(253,250,244,.9);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .2s;z-index:2;}
+.btn-fav:hover{background:#fff;transform:scale(1.1);}
+.btn-fav.active{background:var(--accent);}
+
+.card-tape{position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:46px;height:20px;background:rgba(212,65,11,.22);border:1px solid rgba(212,65,11,.28);z-index:1;}
+.pin{position:absolute;top:-5px;width:11px;height:11px;border-radius:50%;z-index:3;box-shadow:0 2px 4px rgba(0,0,0,.3);}
+.pin-red{background:radial-gradient(circle at 35% 35%,#e74c3c,#922b21);left:28%;}
+.pin-blue{background:radial-gradient(circle at 35% 35%,#3498db,#1a5276);left:50%;}
+.pin-green{background:radial-gradient(circle at 35% 35%,#2ecc71,#1e8449);left:72%;}
+
+.card-body{padding:18px 18px 14px;}
+.card-category{font-family:'Unbounded',sans-serif;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#fff;padding:3px 7px;display:inline-block;margin-bottom:9px;background:var(--accent);}
+.cat-nieruh{background:#7D3C98!important;}.cat-avto{background:#1A5276!important;}.cat-robota{background:#2D6A2D!important;}.cat-tech{background:#784212!important;}.cat-services{background:#B7950B!important;}.cat-animals{background:#117A65!important;}
+.card-title{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;color:var(--ink);line-height:1.4;margin-bottom:6px;}
+.card-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.card-price{font-family:'Unbounded',sans-serif;font-size:17px;font-weight:900;color:var(--accent);margin-bottom:10px;}
+.card-price.free{color:var(--accent2);}
+.card-meta{display:flex;justify-content:space-between;align-items:center;border-top:1px dashed var(--border);padding-top:9px;font-size:10px;color:var(--muted);margin-bottom:10px;}
+.featured-badge{position:absolute;top:188px;right:10px;background:var(--accent);color:#fff;font-family:'Unbounded',sans-serif;font-size:7px;font-weight:700;padding:2px 6px;text-transform:uppercase;letter-spacing:1px;z-index:2;}
+.card-actions{display:flex;gap:6px;}
+.btn-view-ad,.btn-write{flex:1;padding:7px 0;border:none;font-family:'Unbounded',sans-serif;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;cursor:pointer;transition:all .15s;}
+.btn-view-ad{background:var(--ink);color:var(--paper);}
+.btn-view-ad:hover{background:#333;}
+.btn-write{background:transparent;color:var(--accent);border:2px solid var(--accent);}
+.btn-write:hover{background:var(--accent);color:#fff;}
+
+/* ── GALLERY LIGHTBOX ── */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:500;flex-direction:column;align-items:center;justify-content:center;}
+.lightbox.open{display:flex;}
+.lb-close{position:absolute;top:16px;right:20px;background:none;border:none;color:#fff;font-size:28px;cursor:pointer;font-family:monospace;opacity:.7;transition:opacity .2s;}
+.lb-close:hover{opacity:1;}
+.lb-main{position:relative;display:flex;align-items:center;justify-content:center;width:100%;flex:1;}
+.lb-img{max-width:90vw;max-height:75vh;object-fit:contain;border:2px solid rgba(255,255,255,.1);}
+.lb-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.12);border:none;color:#fff;font-size:28px;width:48px;height:48px;cursor:pointer;transition:background .2s;display:flex;align-items:center;justify-content:center;}
+.lb-arrow:hover{background:rgba(255,255,255,.25);}
+.lb-prev{left:16px;}.lb-next{right:16px;}
+.lb-thumbs{display:flex;gap:8px;padding:12px;overflow-x:auto;max-width:90vw;}
+.lb-thumbs::-webkit-scrollbar{height:3px;}.lb-thumbs::-webkit-scrollbar-thumb{background:#555;}
+.lb-thumb{width:64px;height:64px;object-fit:cover;cursor:pointer;opacity:.5;border:2px solid transparent;transition:all .2s;flex-shrink:0;}
+.lb-thumb.active{opacity:1;border-color:var(--accent);}
+.lb-counter{color:rgba(255,255,255,.6);font-size:12px;font-family:'Unbounded',sans-serif;padding-bottom:4px;}
+
+/* ── CHAT PANEL ── */
+.chat-overlay{position:fixed;inset:0;background:rgba(26,18,8,.55);z-index:300;display:none;justify-content:flex-end;}
+.chat-overlay.open{display:flex;}
+.chat-panel{width:400px;max-width:100vw;height:100vh;background:var(--ch);display:flex;flex-direction:column;position:relative;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);border-left:3px solid var(--accent);}
+.chat-overlay.open .chat-panel{transform:translateX(0);}
+.chat-panel-header{background:var(--ch-panel);padding:16px 18px;border-bottom:2px solid var(--ch-border);display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.chat-panel-title{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;color:var(--paper);flex:1;}
+.btn-close-chat{background:none;border:2px solid var(--ch-border);color:var(--muted);width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition:all .15s;font-family:monospace;}
+.btn-close-chat:hover{background:var(--ch-border);color:var(--paper);}
+.conv-list{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:7px;}
+.conv-list::-webkit-scrollbar{width:4px;}.conv-list::-webkit-scrollbar-thumb{background:var(--ch-border);}
+.conv-item{display:flex;align-items:center;gap:11px;padding:11px 13px;background:var(--ch-panel);border:1px solid var(--ch-border);cursor:pointer;transition:all .15s;}
+.conv-item:hover,.conv-item.active{border-color:var(--accent);background:#2a1e10;}
+.conv-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-size:14px;font-weight:900;color:#fff;flex-shrink:0;}
+.conv-body{flex:1;min-width:0;}
+.conv-name{font-family:'Unbounded',sans-serif;font-size:11px;font-weight:700;color:var(--paper);margin-bottom:2px;}
+.conv-ad{font-size:10px;color:var(--accent);margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.conv-preview{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.conv-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
+.conv-time{font-size:10px;color:var(--muted);}
+.conv-unread{background:var(--accent);color:#fff;font-size:9px;font-weight:900;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
+.chat-empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);padding:40px;text-align:center;}
+.chat-empty-state .emoji{font-size:38px;}
+.chat-empty-state p{font-family:'Unbounded',sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:1px;line-height:1.7;}
+.chat-win{position:absolute;inset:0;background:var(--ch);display:flex;flex-direction:column;transform:translateX(110%);transition:transform .25s ease;z-index:5;}
+.chat-win.visible{transform:translateX(0);}
+.chat-win-header{background:var(--ch-panel);padding:13px 16px;border-bottom:2px solid var(--ch-border);display:flex;align-items:center;gap:9px;flex-shrink:0;}
+.btn-back{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;padding-right:3px;line-height:1;transition:color .15s;}
+.btn-back:hover{color:var(--paper);}
+.win-info{flex:1;min-width:0;}
+.win-name{font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;color:var(--paper);}
+.win-sub{font-size:10px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.online-dot{display:flex;align-items:center;gap:4px;font-size:10px;color:#2ecc71;flex-shrink:0;}
+.online-dot::before{content:'';width:6px;height:6px;border-radius:50%;background:#2ecc71;display:inline-block;}
+.ad-strip{background:var(--ch-panel);border-bottom:1px solid var(--ch-border);padding:9px 15px;display:flex;align-items:center;gap:9px;flex-shrink:0;}
+.strip-info{flex:1;min-width:0;}
+.strip-label{font-family:'Unbounded',sans-serif;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:2px;}
+.strip-title{font-size:12px;color:var(--paper);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.strip-price{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:900;color:var(--accent);flex-shrink:0;}
+.msg-area{flex:1;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:7px;}
+.msg-area::-webkit-scrollbar{width:4px;}.msg-area::-webkit-scrollbar-thumb{background:var(--ch-border);}
+.date-sep{text-align:center;margin:3px 0;}
+.date-sep span{font-size:10px;color:var(--muted);background:var(--ch);padding:2px 10px;border:1px solid var(--ch-border);}
+.msg-row{display:flex;flex-direction:column;}
+.msg-row.me{align-items:flex-end;}.msg-row.them{align-items:flex-start;}
+.msg-sender-name{font-size:10px;color:var(--muted);padding:0 10px;margin-bottom:2px;}
+.bubble{max-width:78%;padding:10px 14px;font-size:13px;line-height:1.6;color:var(--paper);word-break:break-word;}
+.me .bubble{background:var(--ch-me);border-radius:14px 14px 2px 14px;}
+.them .bubble{background:var(--ch-them);border:1px solid var(--ch-border);border-radius:14px 14px 14px 2px;}
+.bubble-footer{font-size:10px;color:rgba(253,250,244,.4);margin-top:3px;display:flex;align-items:center;gap:4px;justify-content:flex-end;}
+.them .bubble-footer{justify-content:flex-start;}
+.typing-dots{display:flex;gap:4px;padding:10px 14px;background:var(--ch-them);border:1px solid var(--ch-border);border-radius:14px 14px 14px 2px;align-self:flex-start;}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:bounce 1.2s infinite;}
+.dot:nth-child(2){animation-delay:.2s;}.dot:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+.chat-input-row{background:var(--ch-panel);border-top:2px solid var(--ch-border);padding:11px 13px;display:flex;gap:7px;align-items:flex-end;flex-shrink:0;}
+.msg-input{flex:1;background:var(--ch);border:1px solid var(--ch-border);color:var(--paper);font-family:'Geologica',sans-serif;font-size:13px;padding:9px 13px;outline:none;resize:none;max-height:120px;min-height:40px;line-height:1.5;transition:border .2s;}
+.msg-input:focus{border-color:var(--accent);}
+.msg-input::placeholder{color:var(--muted);}
+.btn-send{background:var(--accent);border:none;color:#fff;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0;transition:background .2s;}
+.btn-send:hover{background:#b33500;}
+
+/* ── FAVORITES PANEL ── */
+.fav-overlay{position:fixed;inset:0;background:rgba(26,18,8,.55);z-index:300;display:none;justify-content:flex-end;}
+.fav-overlay.open{display:flex;}
+.fav-panel{width:420px;max-width:100vw;height:100vh;background:var(--paper);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);border-left:3px solid var(--accent);}
+.fav-overlay.open .fav-panel{transform:translateX(0);}
+.fav-header{background:var(--ink);padding:16px 18px;border-bottom:2px solid var(--accent);display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.fav-title{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;color:var(--paper);flex:1;}
+.fav-list{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
+.fav-list::-webkit-scrollbar{width:4px;}.fav-list::-webkit-scrollbar-thumb{background:var(--border);}
+.fav-item{display:flex;gap:12px;background:var(--bg);border:1px solid var(--border);padding:12px;transition:border .15s;cursor:pointer;}
+.fav-item:hover{border-color:var(--accent);}
+.fav-item-photo{width:72px;height:72px;flex-shrink:0;object-fit:cover;background:#E8E0D0;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.fav-item-photo img{width:100%;height:100%;object-fit:cover;}
+.fav-item-body{flex:1;min-width:0;}
+.fav-item-cat{font-family:'Unbounded',sans-serif;font-size:8px;font-weight:700;text-transform:uppercase;color:#fff;padding:2px 6px;display:inline-block;margin-bottom:4px;}
+.fav-item-title{font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;color:var(--ink);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fav-item-price{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:900;color:var(--accent);}
+.fav-item-price.free{color:var(--accent2);}
+.fav-item-city{font-size:11px;color:var(--muted);margin-top:3px;}
+.btn-unfav{background:none;border:none;font-size:18px;cursor:pointer;flex-shrink:0;opacity:.6;transition:opacity .2s;}
+.btn-unfav:hover{opacity:1;}
+.fav-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);padding:40px;text-align:center;}
+.fav-empty .emoji{font-size:40px;}
+.fav-empty p{font-family:'Unbounded',sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:1px;line-height:1.7;}
+
+/* ── MODALS ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(26,18,8,.7);z-index:200;justify-content:center;align-items:center;padding:20px;}
+.overlay.open{display:flex;}
+.modal{background:var(--paper);max-width:600px;width:100%;max-height:92vh;overflow-y:auto;padding:32px;position:relative;border-top:6px solid var(--accent);box-shadow:12px 12px 0 rgba(26,18,8,.2);animation:slideUp .3s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.modal-close{position:absolute;top:14px;right:14px;background:none;border:2px solid var(--ink);width:30px;height:30px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:monospace;transition:all .15s;}
+.modal-close:hover{background:var(--ink);color:var(--paper);}
+.modal h2{font-family:'Unbounded',sans-serif;font-size:18px;font-weight:900;margin-bottom:6px;color:var(--ink);line-height:1.3;}
+.modal-price{font-family:'Unbounded',sans-serif;font-size:26px;font-weight:900;color:var(--accent);margin:12px 0;}
+.modal-price.free{color:var(--accent2);}
+.modal-desc{font-size:13px;line-height:1.8;color:var(--muted);margin-bottom:16px;border-left:3px solid var(--accent);padding-left:12px;}
+.modal-info{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.modal-info-item label{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;display:block;margin-bottom:2px;}
+.modal-info-item span{font-size:13px;font-weight:500;color:var(--ink);}
+.modal-btns{display:flex;gap:10px;}
+.btn-call,.btn-chat-now{flex:1;padding:12px;border:none;font-family:'Unbounded',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;cursor:pointer;transition:background .2s;}
+.btn-call{background:var(--ink);color:var(--paper);}.btn-call:hover{background:#333;}
+.btn-chat-now{background:var(--accent);color:#fff;}.btn-chat-now:hover{background:#b33500;}
+
+/* View modal gallery */
+.view-gallery{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;}
+.view-gallery::-webkit-scrollbar{height:3px;}.view-gallery::-webkit-scrollbar-thumb{background:var(--border);}
+.view-gallery-main{width:100%;height:240px;object-fit:cover;margin-bottom:8px;cursor:pointer;border:2px solid var(--border);}
+.view-gallery-main:hover{border-color:var(--accent);}
+.view-gallery-thumb{width:72px;height:72px;object-fit:cover;cursor:pointer;flex-shrink:0;border:2px solid transparent;transition:border .15s;}
+.view-gallery-thumb:hover,.view-gallery-thumb.active{border-color:var(--accent);}
+.view-no-photo{width:100%;height:180px;background:#E8E0D0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--muted);font-size:32px;margin-bottom:16px;}
+
+/* ADD modal */
+.add-modal{max-width:500px;}
+.form-group{margin-bottom:13px;}
+.form-group label{display:block;font-family:'Unbounded',sans-serif;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--ink);margin-bottom:5px;}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:9px 13px;border:2px solid var(--border);background:var(--bg);font-family:'Geologica',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:border .2s;resize:vertical;}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--accent);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* Photo upload area */
+.photo-upload-area{border:2px dashed var(--border);padding:20px;text-align:center;cursor:pointer;transition:border .2s;background:var(--bg);position:relative;}
+.photo-upload-area:hover,.photo-upload-area.drag{border-color:var(--accent);background:#FFF8F5;}
+.photo-upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.photo-upload-icon{font-size:28px;margin-bottom:6px;}
+.photo-upload-text{font-family:'Unbounded',sans-serif;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);}
+.photo-preview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;}
+.photo-preview-item{position:relative;aspect-ratio:1;}
+.photo-preview-item img{width:100%;height:100%;object-fit:cover;}
+.photo-preview-item .del-photo{position:absolute;top:2px;right:2px;background:rgba(26,18,8,.7);color:#fff;border:none;width:18px;height:18px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:monospace;}
+
+.no-results{grid-column:1/-1;text-align:center;padding:70px 20px;color:var(--muted);}
+.no-results .emoji{font-size:44px;display:block;margin-bottom:10px;}
+.no-results p{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:var(--paper);padding:10px 20px;font-family:'Unbounded',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;z-index:999;border-left:3px solid var(--accent);transition:transform .3s ease;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:640px){header{padding:13px 16px;}.search-section{padding:0 16px 14px;}.categories{padding:14px 16px;}.board{padding:0 12px 40px;}.board-header{margin:0 12px 14px;}.chat-panel,.fav-panel{width:100vw;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Дошка<span>.</span>UA</div>
+  <div class="header-actions">
+    <button class="btn-header" onclick="openFavPanel()">❤️ Обране <span class="hbadge" id="favBadge">0</span></button>
+    <button class="btn-header" onclick="openChatPanel()">💬 Чат <span class="hbadge" id="chatBadge">3</span></button>
+    <button class="btn-primary" onclick="openAddModal()">+ Оголошення</button>
+  </div>
+</header>
+
+<div class="search-section">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Пошук оголошень..." oninput="renderCards()">
+  </div>
+  <select class="filter-select" id="sortSelect" onchange="renderCards()">
+    <option value="newest">Спочатку новіші</option>
+    <option value="price-asc">Ціна: від низької</option>
+    <option value="price-desc">Ціна: від високої</option>
+  </select>
+</div>
+
+<div class="categories">
+  <button class="cat-btn active" data-cat="all" onclick="setCategory(this,'all')">Всі <span class="count">12</span></button>
+  <button class="cat-btn" data-cat="Нерухомість" onclick="setCategory(this,'Нерухомість')">🏠 Нерухомість</button>
+  <button class="cat-btn" data-cat="Транспорт" onclick="setCategory(this,'Транспорт')">🚗 Транспорт</button>
+  <button class="cat-btn" data-cat="Робота" onclick="setCategory(this,'Робота')">💼 Робота</button>
+  <button class="cat-btn" data-cat="Техніка" onclick="setCategory(this,'Техніка')">📱 Техніка</button>
+  <button class="cat-btn" data-cat="Послуги" onclick="setCategory(this,'Послуги')">🔧 Послуги</button>
+  <button class="cat-btn" data-cat="Тварини" onclick="setCategory(this,'Тварини')">🐾 Тварини</button>
+</div>
+
+<div class="board-header">
+  <span class="board-title">Оголошення</span>
+  <span class="results-count" id="resultsCount">12 оголошень</span>
+</div>
+<div class="board" id="board"></div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" onclick="closeLB()">×</button>
+  <div class="lb-main">
+    <button class="lb-arrow lb-prev" onclick="lbNav(-1)">‹</button>
+    <img class="lb-img" id="lbImg" src="" alt="">
+    <button class="lb-arrow lb-next" onclick="lbNav(1)">›</button>
+  </div>
+  <div class="lb-counter" id="lbCounter"></div>
+  <div class="lb-thumbs" id="lbThumbs"></div>
+</div>
+
+<!-- FAVORITES PANEL -->
+<div class="fav-overlay" id="favOverlay" onclick="favOverlayClick(event)">
+  <div class="fav-panel">
+    <div class="fav-header">
+      <span class="fav-title">❤️ Збережені оголошення</span>
+      <button class="btn-close-chat" onclick="closeFavPanel()">×</button>
+    </div>
+    <div class="fav-list" id="favList"></div>
+    <div class="fav-empty" id="favEmpty" style="display:none">
+      <span class="emoji">❤️</span>
+      <p>Немає збережених.<br>Натисніть ❤ на картці!</p>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT PANEL -->
+<div class="chat-overlay" id="chatOverlay" onclick="chatOverlayClick(event)">
+  <div class="chat-panel">
+    <div class="chat-panel-header">
+      <span class="chat-panel-title">💬 Повідомлення</span>
+      <button class="btn-close-chat" onclick="closeChatPanel()">×</button>
+    </div>
+    <div class="conv-list" id="convList"></div>
+    <div class="chat-empty-state" id="chatEmptyState" style="display:none">
+      <span class="emoji">💬</span>
+      <p>Немає переписок.<br>Натисніть «Написати»<br>на оголошенні!</p>
+    </div>
+    <div class="chat-win" id="chatWin">
+      <div class="chat-win-header">
+        <button class="btn-back" onclick="closeWin()">←</button>
+        <div class="win-info"><div class="win-name" id="winName"></div><div class="win-sub" id="winSub"></div></div>
+        <div class="online-dot" id="winOnline">Онлайн</div>
+      </div>
+      <div class="ad-strip" id="adStrip"></div>
+      <div class="msg-area" id="msgArea"></div>
+      <div class="chat-input-row">
+        <textarea class="msg-input" id="msgInput" placeholder="Напишіть повідомлення..." rows="1" onkeydown="onKey(event)" oninput="resize(this)"></textarea>
+        <button class="btn-send" onclick="sendMsg()">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW MODAL -->
+<div class="overlay" id="viewOverlay" onclick="closeView(event)">
+  <div class="modal" id="viewModal">
+    <button class="modal-close" onclick="closeView()">×</button>
+    <div id="viewContent"></div>
+  </div>
+</div>
+
+<!-- ADD MODAL -->
+<div class="overlay" id="addOverlay" onclick="closeAdd(event)">
+  <div class="modal add-modal">
+    <button class="modal-close" onclick="closeAdd()">×</button>
+    <h2 style="font-family:'Unbounded',sans-serif;font-size:16px;margin-bottom:18px">Нове оголошення</h2>
+    <div class="form-group">
+      <label>Фото (до 6 шт.)</label>
+      <div class="photo-upload-area" id="uploadArea" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFiles(event)">
+        <input type="file" id="photoInput" accept="image/*" multiple onchange="handleFiles(this.files)">
+        <div class="photo-upload-icon">📷</div>
+        <div class="photo-upload-text">Натисніть або перетягніть фото</div>
+      </div>
+      <div class="photo-preview-grid" id="photoPreviewGrid"></div>
+    </div>
+    <div class="form-group"><label>Заголовок *</label><input id="nTitle" placeholder="Напр.: Продам ноутбук..."></div>
+    <div class="form-row">
+      <div class="form-group"><label>Категорія *</label><select id="nCat"><option>Нерухомість</option><option>Транспорт</option><option>Робота</option><option>Техніка</option><option>Послуги</option><option>Тварини</option></select></div>
+      <div class="form-group"><label>Ціна (грн)</label><input type="number" id="nPrice" placeholder="0 = безкоштовно"></div>
+    </div>
+    <div class="form-group"><label>Місто *</label><input id="nCity" placeholder="Київ, Львів..."></div>
+    <div class="form-group"><label>Опис *</label><textarea id="nDesc" rows="3" placeholder="Деталі товару або послуги..."></textarea></div>
+    <div class="form-group"><label>Контакт *</label><input id="nContact" placeholder="+380..."></div>
+    <button class="btn-primary" style="width:100%;padding:13px;font-size:11px;letter-spacing:1px" onclick="submitAd()">Опублікувати</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══ DEMO PHOTOS (placeholder solid colors as data URLs) ══ */
+function makePhoto(color,label){
+  const c=document.createElement('canvas');c.width=400;c.height=300;
+  const ctx=c.getContext('2d');ctx.fillStyle=color;ctx.fillRect(0,0,400,300);
+  ctx.fillStyle='rgba(255,255,255,0.15)';ctx.fillRect(0,0,400,150);
+  ctx.fillStyle='rgba(0,0,0,0.3)';ctx.font='bold 28px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(label,200,150);return c.toDataURL();
+}
+const DEMO_PHOTOS={
+  1:[makePhoto('#4A2D6E','🏠 Квартира'),makePhoto('#5D3A8A','🛋 Вітальня'),makePhoto('#3D2461','🛏 Спальня')],
+  2:[makePhoto('#1A3A52','🚗 Toyota Camry'),makePhoto('#21495E','🔑 Салон'),makePhoto('#162E42','⚙️ Двигун')],
+  3:[makePhoto('#1A3D1A','💼 Портфоліо'),makePhoto('#204820','🖥 Проекти')],
+  4:[makePhoto('#5C2E0A','📱 iPhone 15 Pro'),makePhoto('#6B3510','📦 Коробка'),makePhoto('#4A2408','🔋 Стан')],
+  5:[makePhoto('#8A7200','🔧 Ремонт')],
+  6:[makePhoto('#0D5A4A','🐱 Кошенята'),makePhoto('#0F6B58','🐾 Малюки')],
+  7:[makePhoto('#5C1A6E','🏢 Офіс'),makePhoto('#6B2180','💼 Зал'),makePhoto('#501864','🪟 Вікна')],
+  8:[makePhoto('#8A6000','🚚 Газель')],
+  9:[makePhoto('#5C2E0A','💻 MacBook'),makePhoto('#6B3510','📦 Комплект')],
+  10:[makePhoto('#1A3D1A','🚗 Водій')],
+  11:[makePhoto('#0D5A4A','🐶 Рекс'),makePhoto('#0F6B58','🦮 Прогулянка'),makePhoto('#0A4236','❤️ Дружелюбний')],
+  12:[makePhoto('#1A3A52','🚙 Skoda'),makePhoto('#21495E','🔑 Салон')],
+};
+
+const CC={'Нерухомість':'cat-nieruh','Транспорт':'cat-avto','Робота':'cat-robota','Техніка':'cat-tech','Послуги':'cat-services','Тварини':'cat-animals'};
+const PINS=['pin-red','pin-blue','pin-green'];
+const SELLER_COLORS=['#D4410B','#7D3C98','#1A5276','#2D6A2D','#784212','#117A65'];
+
+let ads=[
+  {id:1,featured:true,title:'2-кімнатна квартира в центрі Києва',category:'Нерухомість',price:85000,city:'Київ',desc:'Простора квартира 58 кв.м, ремонт 2022 року, вбудована кухня, паркінг. Поруч метро Хрещатик.',contact:'+38 067 123 45 67',date:'2 трав 2026'},
+  {id:2,featured:false,title:'Toyota Camry 2020, 2.5 AT',category:'Транспорт',price:28500,city:'Харків',desc:'Один власник, гаражне зберігання, сервісний запис у дилера. Без ДТП, всі опції.',contact:'+38 066 987 65 43',date:'1 трав 2026'},
+  {id:3,featured:false,title:'Frontend розробник — шукаю роботу',category:'Робота',price:0,city:'Львів',desc:'React, TypeScript, Next.js — 4 роки досвіду. Middle/Senior. Готовий до ремоуту.',contact:'dev@example.com',date:'30 квіт 2026'},
+  {id:4,featured:false,title:'iPhone 15 Pro, 256GB, чорний',category:'Техніка',price:42000,city:'Одеса',desc:'Відмінний стан, коробка, аксесуари. Акумулятор 98%.',contact:'+38 050 555 11 22',date:'29 квіт 2026'},
+  {id:5,featured:false,title:'Ремонт квартир під ключ',category:'Послуги',price:0,city:'Дніпро',desc:'Бригада з 10 роками досвіду. Штукатурка, плитка, електрика, сантехніка.',contact:'+38 097 444 33 11',date:'28 квіт 2026'},
+  {id:6,featured:false,title:'Кошенята мейн-кун, документи',category:'Тварини',price:5500,city:'Київ',desc:'Три хлопчики та дві дівчинки. Батьки чемпіони. Щеплені, з ветпаспортом.',contact:'+38 063 222 77 88',date:'27 квіт 2026'},
+  {id:7,featured:true,title:'Оренда офісу 120 кв.м, Поділ',category:'Нерухомість',price:1200,city:'Київ',desc:'Відкритий простір, переговорна, кухня. 5 хв від метро Контрактова площа.',contact:'office@realty.ua',date:'3 трав 2026'},
+  {id:8,featured:false,title:'Вантажна газель з вантажниками',category:'Послуги',price:350,city:'Запоріжжя',desc:'Переїзди, перевезення меблів та будматеріалів. Газель 1.5т, двоє вантажників.',contact:'+38 067 777 00 11',date:'26 квіт 2026'},
+  {id:9,featured:false,title:'MacBook Pro M3, 14", 512GB',category:'Техніка',price:68000,city:'Вінниця',desc:'Куплений листопад 2024, є чек. Стан ідеальний, 10 місяців гарантії.',contact:'+38 096 100 20 30',date:'2 трав 2026'},
+  {id:10,featured:false,title:'Водій категорії B+C, досвід 12 р.',category:'Робота',price:0,city:'Херсон',desc:'Шукаю постійну роботу водієм або кур\'єром. Без шкідливих звичок.',contact:'+38 098 300 40 50',date:'25 квіт 2026'},
+  {id:11,featured:false,title:'Лабрадор ретрівер, хлопчик 3 р.',category:'Тварини',price:0,city:'Чернівці',desc:'Шукаємо дому для Рекса. Добрий, вихований, знає команди.',contact:'+38 050 600 11 22',date:'24 квіт 2026'},
+  {id:12,featured:false,title:'Skoda Octavia A7, 2018',category:'Транспорт',price:16800,city:'Полтава',desc:'Дизель 2.0 150 к.с., пробіг 98 000 км. Повна сервісна книга.',contact:'+38 067 800 90 10',date:'23 квіт 2026'},
+];
+
+let convs=[
+  {id:'c1',adId:1,adTitle:'2-кімнатна квартира в центрі Києва',seller:'Марія К.',initial:'М',color:'#D4410B',online:true,unread:2,msgs:[{f:'them',t:'Доброго дня! Квартира ще доступна?',ts:'10:30'},{f:'me',t:'Так! Коли зручно подивитися?',ts:'10:32'},{f:'them',t:'Може у суботу о 12:00?',ts:'10:34'},{f:'them',t:'І чи є паркінг підземний?',ts:'10:35'}]},
+  {id:'c2',adId:4,adTitle:'iPhone 15 Pro, 256GB',seller:'Олег Т.',initial:'О',color:'#7D3C98',online:false,unread:1,msgs:[{f:'me',t:'Привіт! Є ще в наявності?',ts:'вчора'},{f:'them',t:'Так є! Відмінний стан.',ts:'вчора'},{f:'them',t:'Можу надіслати відео 📱',ts:'вчора'}]},
+  {id:'c3',adId:2,adTitle:'Toyota Camry 2020',seller:'Тарас В.',initial:'Т',color:'#1A5276',online:true,unread:0,msgs:[{f:'me',t:'Добрий день! Можливий торг?',ts:'пн'},{f:'them',t:'Привіт! Торг при огляді — до 500$',ts:'пн'},{f:'me',t:'Дякую, подумаю',ts:'пн'}]},
+];
+
+let favorites=new Set();
+let currentCat='all';
+let activeConvId=null;
+let newAdPhotos=[];
+
+/* lightbox state */
+let lbPhotos=[],lbIdx=0;
+
+const REPLIES=['Так, ще доступно! 😊','Можу надіслати більше фото.','Торг при зустрічі можливий.','Доставка Новою Поштою.','Зателефонуйте в будь-який час 📞','Коли зручно зустрітися?','Є всі документи.','Гарантія ще 10 місяців 👍'];
+
+function fp(p){return p?p.toLocaleString('uk-UA')+' ₴':'Безкоштовно';}
+function nowTime(){const d=new Date();return d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');}
+function getPhotos(id){return DEMO_PHOTOS[id]||[];}
+
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+/* ── BOARD ── */
+function renderCards(){
+  const board=document.getElementById('board');
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const s=document.getElementById('sortSelect').value;
+  let list=ads.filter(a=>(currentCat==='all'||a.category===currentCat)&&(a.title.toLowerCase().includes(q)||a.desc.toLowerCase().includes(q)||a.city.toLowerCase().includes(q)));
+  if(s==='price-asc')list.sort((a,b)=>a.price-b.price);
+  else if(s==='price-desc')list.sort((a,b)=>b.price-a.price);
+  else list.sort((a,b)=>b.id-a.id);
+  document.getElementById('resultsCount').textContent=list.length+' оголошень';
+  if(!list.length){board.innerHTML='<div class="no-results"><span class="emoji">🔍</span><p>Нічого не знайдено</p></div>';return;}
+  board.innerHTML=list.map((a,i)=>{
+    const photos=getPhotos(a.id);
+    const isFav=favorites.has(a.id);
+    const firstPhoto=photos[0];
+    return `<div class="card${a.featured?' featured':''}" style="animation-delay:${i*40}ms">
+      <div class="card-tape"></div>
+      <div class="pin ${PINS[i%3]}"></div>
+      <div class="card-photo" onclick="openLB(${a.id},0)">
+        ${firstPhoto
+          ?`<img src="${firstPhoto}" alt="${a.title}" loading="lazy">`
+          :`<div class="card-photo-placeholder"><span style="font-size:32px">${catEmoji(a.category)}</span><span>Без фото</span></div>`}
+        ${photos.length>1?`<div class="photo-count">📷 ${photos.length}</div>`:''}
+        <button class="btn-fav${isFav?' active':''}" onclick="toggleFav(event,${a.id})">${isFav?'❤️':'🤍'}</button>
+      </div>
+      ${a.featured?`<div class="featured-badge">ТОП</div>`:''}
+      <div class="card-body">
+        <div class="card-category ${CC[a.category]||''}">${a.category}</div>
+        <div class="card-title">${a.title}</div>
+        <div class="card-desc">${a.desc}</div>
+        <div class="card-price${!a.price?' free':''}">${fp(a.price)}</div>
+        <div class="card-meta"><span>📍 ${a.city}</span><span style="font-style:italic">${a.date}</span></div>
+        <div class="card-actions">
+          <button class="btn-view-ad" onclick="openView(${a.id})">Детальніше</button>
+          <button class="btn-write" onclick="startChat(${a.id})">💬 Написати</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  updateFavBadge();
+}
+
+function catEmoji(cat){return{Нерухомість:'🏠',Транспорт:'🚗',Робота:'💼',Техніка:'📱',Послуги:'🔧',Тварини:'🐾'}[cat]||'📌';}
+function setCategory(btn,cat){document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentCat=cat;renderCards();}
+
+/* ── FAVORITES ── */
+function toggleFav(e,id){
+  e.stopPropagation();
+  if(favorites.has(id)){favorites.delete(id);showToast('Видалено з обраного');}
+  else{favorites.add(id);showToast('❤️ Додано до обраного');}
+  renderCards();
+  if(document.getElementById('favOverlay').classList.contains('open'))renderFavList();
+}
+function updateFavBadge(){
+  const b=document.getElementById('favBadge');
+  b.textContent=favorites.size;
+  b.style.display=favorites.size?'inline-flex':'none';
+}
+function openFavPanel(){document.getElementById('favOverlay').classList.add('open');renderFavList();}
+function closeFavPanel(){document.getElementById('favOverlay').classList.remove('open');}
+function favOverlayClick(e){if(e.target===document.getElementById('favOverlay'))closeFavPanel();}
+function renderFavList(){
+  const list=document.getElementById('favList');
+  const empty=document.getElementById('favEmpty');
+  const favAds=ads.filter(a=>favorites.has(a.id));
+  if(!favAds.length){list.style.display='none';empty.style.display='flex';return;}
+  list.style.display='flex';empty.style.display='none';
+  list.innerHTML=favAds.map(a=>{
+    const photos=getPhotos(a.id);
+    return `<div class="fav-item" onclick="openView(${a.id});closeFavPanel()">
+      <div class="fav-item-photo">${photos[0]?`<img src="${photos[0]}" alt="">`:`<span>${catEmoji(a.category)}</span>`}</div>
+      <div class="fav-item-body">
+        <div class="fav-item-cat ${CC[a.category]||''}">${a.category}</div>
+        <div class="fav-item-title">${a.title}</div>
+        <div class="fav-item-price${!a.price?' free':''}">${fp(a.price)}</div>
+        <div class="fav-item-city">📍 ${a.city} · ${a.date}</div>
+      </div>
+      <button class="btn-unfav" onclick="event.stopPropagation();toggleFav(event,${a.id});renderFavList()">🗑</button>
+    </div>`;
+  }).join('');
+}
+
+/* ── LIGHTBOX ── */
+function openLB(adId,startIdx){
+  const photos=getPhotos(adId);
+  if(!photos.length)return;
+  lbPhotos=photos;lbIdx=startIdx;
+  updateLB();
+  document.getElementById('lightbox').classList.add('open');
+  document.addEventListener('keydown',lbKey);
+}
+function closeLB(){document.getElementById('lightbox').classList.remove('open');document.removeEventListener('keydown',lbKey);}
+function lbKey(e){if(e.key==='ArrowLeft')lbNav(-1);else if(e.key==='ArrowRight')lbNav(1);else if(e.key==='Escape')closeLB();}
+function lbNav(dir){lbIdx=(lbIdx+dir+lbPhotos.length)%lbPhotos.length;updateLB();}
+function updateLB(){
+  document.getElementById('lbImg').src=lbPhotos[lbIdx];
+  document.getElementById('lbCounter').textContent=(lbIdx+1)+' / '+lbPhotos.length;
+  document.getElementById('lbThumbs').innerHTML=lbPhotos.map((p,i)=>`<img class="lb-thumb${i===lbIdx?' active':''}" src="${p}" onclick="lbIdx=${i};updateLB()">`).join('');
+  // hide arrows if only one photo
+  document.querySelectorAll('.lb-arrow').forEach(a=>a.style.display=lbPhotos.length<2?'none':'flex');
+}
+
+/* ── VIEW MODAL ── */
+function openView(id){
+  const a=ads.find(x=>x.id===id);if(!a)return;
+  const photos=getPhotos(a.id);
+  const isFav=favorites.has(a.id);
+  let galleryHTML='';
+  if(photos.length){
+    galleryHTML=`<img class="view-gallery-main" id="viewMain" src="${photos[0]}" onclick="openLB(${a.id},0)">`;
+    if(photos.length>1)galleryHTML+=`<div class="view-gallery">${photos.map((p,i)=>`<img class="view-gallery-thumb${i===0?' active':''}" src="${p}" onclick="switchViewMain(this,'${p}',${i},${a.id})">`).join('')}</div>`;
+  }else{
+    galleryHTML=`<div class="view-no-photo">${catEmoji(a.category)}<span style="font-size:12px;font-family:'Unbounded',sans-serif">Фото відсутні</span></div>`;
+  }
+  document.getElementById('viewContent').innerHTML=`
+    ${galleryHTML}
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+      <div class="card-category ${CC[a.category]||''}" style="margin-bottom:10px">${a.category}</div>
+      <button onclick="toggleFav(event,${a.id});document.querySelector('#viewContent .btn-fav-view').textContent=favorites.has(${a.id})?'❤️ В обраному':'🤍 В обране'" class="btn-fav-view" style="background:none;border:2px solid var(--border);padding:6px 12px;font-family:'Unbounded',sans-serif;font-size:9px;font-weight:700;cursor:pointer;white-space:nowrap">${isFav?'❤️ В обраному':'🤍 В обране'}</button>
+    </div>
+    <h2>${a.title}</h2>
+    <div class="modal-price${!a.price?' free':''}">${fp(a.price)}</div>
+    <div class="modal-desc">${a.desc}</div>
+    <div class="modal-info">
+      <div class="modal-info-item"><label>Місто</label><span>📍 ${a.city}</span></div>
+      <div class="modal-info-item"><label>Дата</label><span>${a.date}</span></div>
+      <div class="modal-info-item"><label>Контакт</label><span>${a.contact}</span></div>
+      <div class="modal-info-item"><label>ID</label><span>#${a.id}</span></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-call" onclick="alert('Контакт: ${a.contact}')">📞 Зателефонувати</button>
+      <button class="btn-chat-now" onclick="closeView();startChat(${a.id})">💬 Написати</button>
+    </div>`;
+  document.getElementById('viewOverlay').classList.add('open');
+}
+function switchViewMain(el,src,idx,adId){
+  document.getElementById('viewMain').src=src;
+  document.getElementById('viewMain').onclick=()=>openLB(adId,idx);
+  document.querySelectorAll('.view-gallery-thumb').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+function closeView(e){if(!e||e.target===document.getElementById('viewOverlay'))document.getElementById('viewOverlay').classList.remove('open');}
+
+/* ── ADD AD ── */
+function openAddModal(){document.getElementById('addOverlay').classList.add('open');}
+function closeAdd(e){if(!e||e.target===document.getElementById('addOverlay'))document.getElementById('addOverlay').classList.remove('open');}
+
+function dragOver(e){e.preventDefault();document.getElementById('uploadArea').classList.add('drag');}
+function dragLeave(){document.getElementById('uploadArea').classList.remove('drag');}
+function dropFiles(e){e.preventDefault();dragLeave();handleFiles(e.dataTransfer.files);}
+function handleFiles(files){
+  Array.from(files).slice(0,6-newAdPhotos.length).forEach(f=>{
+    if(!f.type.startsWith('image/'))return;
+    const r=new FileReader();r.onload=ev=>{newAdPhotos.push(ev.target.result);renderPhotoPreview();};r.readAsDataURL(f);
+  });
+}
+function renderPhotoPreview(){
+  document.getElementById('photoPreviewGrid').innerHTML=newAdPhotos.map((src,i)=>`
+    <div class="photo-preview-item">
+      <img src="${src}">
+      <button class="del-photo" onclick="removePhoto(${i})">×</button>
+    </div>`).join('');
+}
+function removePhoto(i){newAdPhotos.splice(i,1);renderPhotoPreview();}
+
+function submitAd(){
+  const t=document.getElementById('nTitle').value.trim(),ct=document.getElementById('nCat').value,p=parseInt(document.getElementById('nPrice').value)||0,ci=document.getElementById('nCity').value.trim(),d=document.getElementById('nDesc').value.trim(),co=document.getElementById('nContact').value.trim();
+  if(!t||!ci||!d||!co){alert('Заповніть усі обов\'язкові поля!');return;}
+  const newId=ads.length+1;
+  if(newAdPhotos.length)DEMO_PHOTOS[newId]=[...newAdPhotos];
+  ads.unshift({id:newId,featured:false,title:t,category:ct,price:p,city:ci,desc:d,contact:co,date:new Date().toLocaleDateString('uk-UA',{day:'numeric',month:'short',year:'numeric'})});
+  closeAdd();
+  currentCat='all';document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));document.querySelector('[data-cat="all"]').classList.add('active');
+  ['nTitle','nPrice','nCity','nDesc','nContact'].forEach(id=>document.getElementById(id).value='');
+  newAdPhotos=[];renderPhotoPreview();
+  renderCards();showToast('✅ Оголошення опубліковано!');
+}
+
+/* ── CHAT ── */
+function openChatPanel(){document.getElementById('chatOverlay').classList.add('open');renderConvList();}
+function closeChatPanel(){document.getElementById('chatOverlay').classList.remove('open');closeWin();}
+function chatOverlayClick(e){if(e.target===document.getElementById('chatOverlay'))closeChatPanel();}
+
+function renderConvList(){
+  const list=document.getElementById('convList');const empty=document.getElementById('chatEmptyState');
+  const total=convs.reduce((s,c)=>s+c.unread,0);
+  const badge=document.getElementById('chatBadge');badge.textContent=total||'0';badge.style.display=total?'inline-flex':'none';
+  if(!convs.length){list.style.display='none';empty.style.display='flex';return;}
+  list.style.display='flex';empty.style.display='none';
+  list.innerHTML=convs.map(c=>{
+    const last=c.msgs[c.msgs.length-1];const pv=(last.f==='me'?'Ви: ':'')+last.t;
+    return `<div class="conv-item${activeConvId===c.id?' active':''}" onclick="openWin('${c.id}')">
+      <div class="conv-avatar" style="background:${c.color}">${c.initial}</div>
+      <div class="conv-body">
+        <div class="conv-name">${c.seller}</div>
+        <div class="conv-ad">📌 ${c.adTitle.substring(0,28)}${c.adTitle.length>28?'…':''}</div>
+        <div class="conv-preview">${pv.substring(0,40)}${pv.length>40?'…':''}</div>
+      </div>
+      <div class="conv-meta"><span class="conv-time">${last.ts}</span>${c.unread?`<span class="conv-unread">${c.unread}</span>`:''}</div>
+    </div>`;
+  }).join('');
+}
+
+function openWin(cid){
+  const c=convs.find(x=>x.id===cid);if(!c)return;
+  activeConvId=cid;c.unread=0;
+  document.getElementById('winName').textContent=c.seller;
+  document.getElementById('winSub').textContent=c.adTitle;
+  document.getElementById('winOnline').style.display=c.online?'flex':'none';
+  const ad=ads.find(a=>a.id===c.adId);
+  document.getElementById('adStrip').innerHTML=ad?`<div class="strip-info"><div class="strip-label">Оголошення</div><div class="strip-title">${ad.title}</div></div><div class="strip-price">${fp(ad.price)}</div>`:'';
+  renderMsgs(c);document.getElementById('chatWin').classList.add('visible');renderConvList();
+}
+function closeWin(){document.getElementById('chatWin').classList.remove('visible');activeConvId=null;renderConvList();}
+
+function renderMsgs(c){
+  const area=document.getElementById('msgArea');
+  let html='<div class="date-sep"><span>Сьогодні</span></div>';
+  c.msgs.forEach((m,i)=>{
+    const prev=c.msgs[i-1];const showName=m.f==='them'&&(!prev||prev.f!==m.f);
+    html+=`<div class="msg-row ${m.f}">${showName?`<div class="msg-sender-name">${c.seller}</div>`:''}
+      <div class="bubble">${m.t}<div class="bubble-footer">${m.ts}${m.f==='me'?' ✓✓':''}</div></div></div>`;
+  });
+  area.innerHTML=html;area.scrollTop=area.scrollHeight;
+}
+
+function sendMsg(){
+  const inp=document.getElementById('msgInput');const txt=inp.value.trim();if(!txt||!activeConvId)return;
+  const c=convs.find(x=>x.id===activeConvId);if(!c)return;
+  c.msgs.push({f:'me',t:txt,ts:nowTime()});
+  inp.value='';inp.style.height='40px';renderMsgs(c);renderConvList();
+  if(Math.random()>0.25){
+    const area=document.getElementById('msgArea');
+    setTimeout(()=>{if(activeConvId!==c.id)return;const dots=document.createElement('div');dots.className='typing-dots';dots.id='td';dots.innerHTML='<div class="dot"></div><div class="dot"></div><div class="dot"></div>';area.appendChild(dots);area.scrollTop=area.scrollHeight;},700);
+    setTimeout(()=>{if(activeConvId!==c.id)return;const td=document.getElementById('td');if(td)td.remove();c.msgs.push({f:'them',t:REPLIES[Math.floor(Math.random()*REPLIES.length)],ts:nowTime()});renderMsgs(c);renderConvList();},2300+Math.random()*1200);
+  }
+}
+function onKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function resize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
+
+function startChat(adId){
+  const ad=ads.find(a=>a.id===adId);if(!ad)return;
+  let c=convs.find(x=>x.adId===adId);
+  if(!c){
+    const names=['Марія','Олег','Тарас','Василь','Дмитро','Наталія'];
+    const n=names[Math.floor(Math.random()*names.length)];const cl=SELLER_COLORS[Math.floor(Math.random()*SELLER_COLORS.length)];
+    c={id:'c'+Date.now(),adId,adTitle:ad.title,seller:n+' '+String.fromCharCode(65+Math.floor(Math.random()*20))+'.',initial:n[0],color:cl,online:Math.random()>0.4,unread:0,msgs:[{f:'them',t:'Привіт! Мене звати '+n+'. Чим можу допомогти? 😊',ts:nowTime()}]};
+    convs.unshift(c);
+  }
+  openChatPanel();setTimeout(()=>openWin(c.id),260);
+}
+
+renderCards();
+</script>
+</body>
+</html>
